@@ -1,0 +1,9 @@
+/var/log/galera/galera-status.json {
+    daily
+    rotate 7
+    compress
+    missingok
+    notifempty
+    copytruncate
+    su root adm
+}

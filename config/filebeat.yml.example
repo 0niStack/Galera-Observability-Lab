@@ -1,0 +1,57 @@
+# Filebeat 7.x configuration example for MariaDB + Galera.
+# Replace the OpenSearch endpoint and credentials before enabling.
+
+filebeat.inputs:
+  # MariaDB error log
+  - type: log
+    enabled: true
+    id: mariadb-error
+    paths:
+      - /var/log/mysql/error.log
+    fields:
+      log_type: mariadb_error
+    fields_under_root: true
+
+  # One JSON health snapshot per minute
+  - type: log
+    enabled: true
+    id: galera-status
+    paths:
+      - /var/log/galera/galera-status.json
+    json.keys_under_root: true
+    json.overwrite_keys: true
+    json.add_error_key: true
+    fields:
+      log_type: galera_status
+    fields_under_root: true
+
+  # MariaDB slow query log. Group each query into one multiline event.
+  - type: log
+    enabled: true
+    id: mariadb-slow-query
+    paths:
+      - /var/log/mysql/mariadb-slow.log
+    multiline.pattern: '^# Time:'
+    multiline.negate: true
+    multiline.match: after
+    fields:
+      log_type: mariadb_slow_query
+    fields_under_root: true
+
+# Keep the index naming predictable for the lab.
+setup.ilm.enabled: false
+setup.template.enabled: false
+
+# This setting may be needed for older Filebeat packages on some systems.
+seccomp.enabled: false
+
+output.elasticsearch:
+  hosts: ["https://OPENSEARCH_PRIVATE_IP:9200"]
+  username: "OPENSEARCH_USERNAME"
+  password: "OPENSEARCH_PASSWORD"
+
+  # LAB ONLY: disables server certificate verification.
+  # Production: configure ssl.certificate_authorities and remove this setting.
+  ssl.verification_mode: none
+
+  index: "galera-logs-%{+yyyy.MM.dd}"

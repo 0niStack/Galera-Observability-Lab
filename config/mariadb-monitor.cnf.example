@@ -1,0 +1,6 @@
+# Copy to /etc/galera-monitor.cnf and chmod 600.
+[client]
+user=galera_monitor
+password=REPLACE_WITH_A_LONG_PASSWORD
+host=localhost
+protocol=socket

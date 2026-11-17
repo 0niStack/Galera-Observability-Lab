@@ -1,0 +1,11 @@
+[Unit]
+Description=Collect MariaDB and Galera health snapshot
+After=mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/bin/galera_status.py
+User=root
+Group=root
+UMask=0027
